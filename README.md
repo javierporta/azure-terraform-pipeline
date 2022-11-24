@@ -26,5 +26,13 @@ Terraform state is stored in an Azure Blob container. There is a way to create t
 - Azure DevOps (if using a pipeline)
 
 
+## Running it locally
 
+    terraform init
+
+    terraform validate
+
+    terraform plan --var-file="dev/dev.tfvars" # Use the environment tfvars here (in this example we are running it using dev variables)
+
+    terraform apply --var-file="dev/dev.tfvars" # Use the environment tfvars here (in this example we are running it using dev variables)
 
