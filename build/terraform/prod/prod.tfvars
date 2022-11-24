@@ -1,0 +1,10 @@
+resource_group_name       = "your-resouce-group-name-in-prod"
+app_service_name          = "your-app-service-name-in-prod"
+app_service_plan_name     = "your-app-plan-name-in-prod"
+app_service_plan_sku_name = "B1"
+sql_server_instance_name  = "your-sql-server-instance-in-prod"
+database_name             = "your-sb-name-in-prod"
+database_sku_name         = "S0"
+key_vault_name            = "your-key-vault-name-in-prod"
+aspnetcore_environment    = "Production"
+

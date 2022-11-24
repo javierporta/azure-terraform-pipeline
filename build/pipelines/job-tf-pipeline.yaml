@@ -1,0 +1,79 @@
+parameters:
+  - name: "resourceGroupTfstate"
+    type: string
+    default: ""
+  - name: "tfvarsPath"
+    type: string
+    default: ""
+  - name: "serviceConnectionName"
+    type: string
+    default: ""
+  - name: "storageAccountName"
+    type: string
+    default: ""
+  - name: "storageContainerName"
+    type: string
+    default: ""
+  - name: "storageKey"
+    type: string
+    default: ""
+
+jobs:
+  - job: IaC
+    displayName: "Deploy infrastructure as code"
+    steps:
+      - script: echo Starting terraform provisioning
+        displayName: "Starts terraform provisioning"
+
+      - task: TerraformInstaller@0
+        displayName: "Install Terraform"
+        inputs:
+          terraformVersion: "latest"
+
+      - task: TerraformCLI@0
+        displayName: "Terraform init"
+        inputs:
+          command: "init"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/iac/terraform"
+          backendType: "azurerm"
+          backendServiceArm: ${{parameters.serviceConnectionName}}
+          backendAzureRmResourceGroupName: ${{parameters.resourceGroupTfstate}}
+          backendAzureRmStorageAccountName: ${{parameters.storageAccountName}}
+          backendAzureRmContainerName: ${{parameters.storageContainerName}}
+          backendAzureRmKey: ${{parameters.storageContainerName}}
+          allowTelemetryCollection: true
+
+      #Only needed the first time the pipeline build for importing the resource group of the state (only if using the same RG for tf state and IaC)
+      # - task: TerraformCLI@0
+      #   inputs:
+      #     command: "import"
+      #     environmentServiceName: ${{parameters.serviceConnectionName}}
+      #     workingDirectory: "$(System.DefaultWorkingDirectory)/iac/terraform"
+      #     allowTelemetryCollection: true
+      #     resourceAddress: "azurerm_resource_group.rg"
+      #     resourceId: ${{parameters.importResourceId}}
+
+      - task: TerraformCLI@0
+        displayName: "Terraform validate"
+        inputs:
+          command: "validate"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/iac/terraform"
+          allowTelemetryCollection: true
+
+      - task: TerraformCLI@0
+        displayName: "Terraform plan"
+        inputs:
+          command: "plan"
+          commandOptions: '--var-file="${{parameters.tfvarsPath}}"'
+          environmentServiceName: ${{parameters.serviceConnectionName}}
+          workingDirectory: "$(System.DefaultWorkingDirectory)/iac/terraform"
+          allowTelemetryCollection: true
+
+      - task: TerraformCLI@0
+        displayName: "Terraform apply"
+        inputs:
+          command: "apply"
+          workingDirectory: "$(System.DefaultWorkingDirectory)/build/iac/terraform"
+          commandOptions: '-auto-approve --var-file="${{parameters.tfvarsPath}}"'
+          environmentServiceName: ${{parameters.serviceConnectionName}}
+          allowTelemetryCollection: true
