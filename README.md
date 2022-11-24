@@ -14,7 +14,7 @@ Example of a Terraform template to create the following resources:
 
 ### Flow
 
-[![IaC Flow Image](https://github.com/javierporta/azure-terraform-pipeline/blob/main/images/IaC-diagram.png?raw=true)]
+![IaC Flow Image](https://github.com/javierporta/azure-terraform-pipeline/blob/main/images/IaC-diagram.png?raw=true)
 
 
 Then a yaml pipeline [build/pipelines/iac-pipeline.yml] is used to run the *validate*, *init*, *plan*, and apply commands of Terraform in AzureDevOps with different values depending on the environment usign a given service connection, so any user with permission can run the IaC without the need of having Terrafrom in his/her local environment.
